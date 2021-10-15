@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -27,6 +29,10 @@ public class AtmCard implements Serializable {
     private String nameOnCard;
     private Boolean enabled; 
     private String pin; 
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = true)
+    private Customer customer; 
 
     public Long getAtmCardId() {
         return atmCardId;

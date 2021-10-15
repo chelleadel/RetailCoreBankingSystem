@@ -6,10 +6,12 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -30,6 +32,12 @@ public class Customer implements Serializable {
     private String adressLine1;
     private String addressLines2;
     private String postalCode;
+    
+    @OneToMany(mappedBy ="customer")
+    private List<AtmCard> atmCard;
+    
+    @OneToMany(mappedBy ="customer")
+    private List<DepositAccount> depositAccounts;
 
     public Long getCustomerId() {
         return customerId;

@@ -7,10 +7,14 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import util.enumeration.DepositAccountType;
 
 /**
@@ -31,6 +35,13 @@ public class DepositAccount implements Serializable {
     private BigDecimal holdBalance;
     private BigDecimal ledgerBalance; 
     private Boolean enabled; 
+    
+    @ManyToOne(optional =false)
+    @JoinColumn(nullable = true)
+    private Customer customer; 
+    
+    @OneToMany(mappedBy ="depositAccount")
+    private List<DepositAccountTransaction> transactions;
 
     public Long getDepositAccountId() {
         return depositAccountId;
