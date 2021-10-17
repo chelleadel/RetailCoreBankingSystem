@@ -5,17 +5,27 @@
  */
 package automatedtellermachineclient;
 
+import ejb.session.stateless.AtmCardSessionBeanRemote;
+import javax.ejb.EJB;
+
 /**
  *
  * @author mich
  */
 public class Main {
 
+    @EJB
+    private static AtmCardSessionBeanRemote atmCardSessionBeanRemote;
+
     /**
      * @param args the command line arguments
      */
+    
     public static void main(String[] args) {
         // TODO code application logic here
+        
+        MainApp mainApp = new MainApp(atmCardSessionBeanRemote);
+        mainApp.runApp();
     }
     
 }

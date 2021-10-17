@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import util.enumeration.TransactionStatus;
 import util.enumeration.TransactionType;
 
@@ -37,8 +38,14 @@ public class DepositAccountTransaction implements Serializable {
     private TransactionStatus status;
     
     @ManyToOne(optional= false)
-    @JoinColumn(nullable = true)
+    @JoinColumn(nullable = false)
     private DepositAccount depositAccount;
+    
+    @OneToOne
+    private DepositAccountTransaction sourceTransaction;
+    
+    @OneToOne
+    private DepositAccountTransaction destinationTransaction;
 
     public Long getDepositAccountTransactionId() {
         return depositAccountTransactionId;

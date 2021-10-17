@@ -37,7 +37,7 @@ public class DepositAccount implements Serializable {
     private Boolean enabled; 
     
     @ManyToOne(optional =false)
-    @JoinColumn(nullable = true)
+    @JoinColumn(nullable = false)
     private Customer customer; 
     
     @OneToMany(mappedBy ="depositAccount")

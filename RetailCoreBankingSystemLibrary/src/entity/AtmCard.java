@@ -31,7 +31,7 @@ public class AtmCard implements Serializable {
     private String pin; 
     
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = true)
+    @JoinColumn(nullable = false)
     private Customer customer; 
 
     public Long getAtmCardId() {
