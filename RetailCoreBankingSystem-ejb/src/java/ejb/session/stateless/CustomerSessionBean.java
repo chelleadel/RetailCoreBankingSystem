@@ -39,6 +39,7 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
             em.persist(newCustomer);
             em.flush();
             return newCustomer.getCustomerId();
+            
         } catch (PersistenceException ex) {
             if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
                 if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {

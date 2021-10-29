@@ -29,6 +29,19 @@ public class Employee implements Serializable {
     private String password;
     private EmployeeAccessRightEnum accessRight;
 
+    public Employee() {
+    }
+
+    public Employee(String firstName, String lastName, String username, String password, EmployeeAccessRightEnum accessRight) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.password = password;
+        this.accessRight = accessRight;
+    }
+    
+    
+
     public Long getEmployeeId() {
         return employeeId;
     }

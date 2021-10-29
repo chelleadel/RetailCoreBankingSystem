@@ -6,6 +6,12 @@
 package ejb.session.stateless;
 
 import entity.AtmCard;
+import entity.Customer;
+import entity.DepositAccount;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -14,6 +20,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import util.exception.AccountDoesNotMatchException;
 import util.exception.EntityExistException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
@@ -26,6 +33,13 @@ import util.exception.UpdateException;
 @Stateless
 public class AtmCardSessionBean implements AtmCardSessionBeanRemote, AtmCardSessionBeanLocal {
 
+    @EJB
+    private DepositAccountSessionBeanLocal depositAccountSessionBean;
+
+    @EJB
+    private CustomerSessionBeanLocal customerSessionBean;
+
+    
     @PersistenceContext(unitName = "RetailCoreBankingSystem-ejbPU")
     private EntityManager em;
 
@@ -35,10 +49,26 @@ public class AtmCardSessionBean implements AtmCardSessionBeanRemote, AtmCardSess
     }
 
     @Override
-    public Long issueAtmCard(AtmCard newAtmCard) throws EntityExistException, UnknownPersistenceException {
+    public Long issueAtmCard(AtmCard newAtmCard, Long cusId, List<Long> accounts) throws EntityExistException, UnknownPersistenceException, AccountDoesNotMatchException {
 
         try {
             em.persist(newAtmCard);
+            Customer customer = customerSessionBean.retrieveCustomerByCustomerId(cusId);
+            newAtmCard.setCustomer(customer);
+            customer.setAtmCard(newAtmCard);
+            
+            for (Long accId : accounts) {
+                System.out.println("here: " + accId);
+                DepositAccount depoAcc = depositAccountSessionBean.retrieveDepositAccountByDepositAccountId(accId);
+                
+                if(depoAcc.getCustomer().equals(customer)) {
+                    newAtmCard.getDepositAccounts().add(depoAcc);
+                    depoAcc.setAtmCard(newAtmCard);
+                } else {
+                    throw new AccountDoesNotMatchException("Deposit Account holder is different from ATM card holder");
+                }
+            }
+            
             em.flush();
             return newAtmCard.getAtmCardId();
         } catch (PersistenceException ex) {
@@ -51,7 +81,7 @@ public class AtmCardSessionBean implements AtmCardSessionBeanRemote, AtmCardSess
             } else {
                 throw new UnknownPersistenceException(ex.getMessage());
             }
-        }
+        } 
 
     }
 

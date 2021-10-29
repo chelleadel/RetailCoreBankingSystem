@@ -5,7 +5,9 @@
  */
 package ejb.session.stateless;
 
+import entity.Customer;
 import entity.DepositAccount;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -24,6 +26,9 @@ import util.exception.UnknownPersistenceException;
 @Stateless
 public class DepositAccountSessionBean implements DepositAccountSessionBeanRemote, DepositAccountSessionBeanLocal {
 
+    @EJB
+    private CustomerSessionBeanLocal customerSessionBean;
+
     @PersistenceContext(unitName = "RetailCoreBankingSystem-ejbPU")
     private EntityManager em;
 
@@ -32,9 +37,14 @@ public class DepositAccountSessionBean implements DepositAccountSessionBeanRemot
     public DepositAccountSessionBean() {
     }
 
-    public Long createDepositAccount(DepositAccount newDepositAccount) throws EntityExistException, UnknownPersistenceException {
+    public Long createDepositAccount(DepositAccount newDepositAccount, Long cusId) throws EntityExistException, UnknownPersistenceException {
         try {
+            Customer customer = customerSessionBean.retrieveCustomerByCustomerId(cusId);
+            
             em.persist(newDepositAccount);
+            newDepositAccount.setCustomer(customer);
+            customer.getDepositAccounts().add(newDepositAccount);
+            
             em.flush();
             return newDepositAccount.getDepositAccountId();
         } catch (PersistenceException ex) {
@@ -52,7 +62,7 @@ public class DepositAccountSessionBean implements DepositAccountSessionBeanRemot
     
     public DepositAccount retrieveDepositAccountByDepositAccountId(Long depoAccId) throws EntityNotFoundException {
 
-        Query query = em.createQuery("SELECT c from DepositAccount c WHERE c.depoAccId = :findDepositAccountId");
+        Query query = em.createQuery("SELECT c from DepositAccount c WHERE c.depositAccountId = :findDepositAccountId");
         query.setParameter("findDepositAccountId", depoAccId);
 
         try {

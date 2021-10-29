@@ -18,7 +18,7 @@ import util.exception.UnknownPersistenceException;
 @Remote
 public interface DepositAccountSessionBeanRemote {
     
-    public Long createDepositAccount(DepositAccount newDepositAccount) throws EntityExistException, UnknownPersistenceException;
+    public Long createDepositAccount(DepositAccount newDepositAccount, Long cusId) throws EntityExistException, UnknownPersistenceException;
     public DepositAccount retrieveDepositAccountByDepositAccountId(Long depoAccId) throws EntityNotFoundException;
     
 }

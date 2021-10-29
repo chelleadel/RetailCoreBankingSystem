@@ -39,6 +39,7 @@ public class MainApp {
             System.out.println("1: Insert Card");
             System.out.println("2: Exit");
 
+            response = 0;
             while (response < 1 || response > 2) {
                 System.out.print("> ");
 

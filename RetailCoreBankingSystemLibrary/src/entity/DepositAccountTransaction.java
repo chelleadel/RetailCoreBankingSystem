@@ -70,6 +70,21 @@ public class DepositAccountTransaction implements Serializable {
     @OneToOne
     private DepositAccountTransaction destinationTransaction;
 
+    public DepositAccountTransaction() {
+        
+    }
+
+    public DepositAccountTransaction(Date transactionDateTime, TransactionType type, String code, String reference, BigDecimal amount, TransactionStatus status) {
+        this.transactionDateTime = transactionDateTime;
+        this.type = type;
+        this.code = code;
+        this.reference = reference;
+        this.amount = amount;
+        this.status = status;
+    }
+    
+    
+
     public Long getDepositAccountTransactionId() {
         return depositAccountTransactionId;
     }

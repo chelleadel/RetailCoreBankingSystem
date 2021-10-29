@@ -18,6 +18,6 @@ import util.exception.UnknownPersistenceException;
 @Local
 public interface DepositAccountSessionBeanLocal {
     
-    public Long createDepositAccount(DepositAccount newDepositAccount) throws EntityExistException, UnknownPersistenceException;
+    public Long createDepositAccount(DepositAccount newDepositAccount, Long cusId) throws EntityExistException, UnknownPersistenceException;
     public DepositAccount retrieveDepositAccountByDepositAccountId(Long depoAccId) throws EntityNotFoundException;
 }

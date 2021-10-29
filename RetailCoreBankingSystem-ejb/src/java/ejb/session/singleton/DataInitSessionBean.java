@@ -13,7 +13,12 @@ import ejb.session.stateless.EmployeeSessionBeanRemote;
 import entity.AtmCard;
 import entity.Customer;
 import entity.DepositAccount;
+import entity.Employee;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
@@ -22,6 +27,8 @@ import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.enumeration.DepositAccountType;
+import util.enumeration.EmployeeAccessRightEnum;
+import util.exception.AccountDoesNotMatchException;
 import util.exception.EntityExistException;
 import util.exception.UnknownPersistenceException;
 
@@ -49,8 +56,7 @@ public class DataInitSessionBean {
 
     @EJB
     private AtmCardSessionBeanRemote atmCardSessionBean;
-    
-    
+
     @PersistenceContext(unitName = "RetailCoreBankingSystem-ejbPU")
     private EntityManager em;
 
@@ -58,45 +64,46 @@ public class DataInitSessionBean {
     // "Insert Code > Add Business Method")
     @PostConstruct
     public void postConstruct() {
-        // initializeData();
+        initializeData();
     }
-    
+
     private void initializeData() {
-        
-        
+
+        Employee em1 = new Employee("mich", "adel", "mich", "password", EmployeeAccessRightEnum.TELLER);
         try {
-            
+            employeeSessionBean.createNewEmployee(em1);
+            System.out.println("Employee created!");
+
             Customer cust1 = new Customer("mich", "adel", "1", "12345678", "rc4", "nus", "138614");
+            
+
             AtmCard atm1 = new AtmCard("1234567812345678", "mich", true, "123456");
-            DepositAccount depoAcc1 = new DepositAccount("12345678", DepositAccountType.CURRENT, new BigDecimal(100.00),new BigDecimal(100.00), new BigDecimal(50.00), true);
+            
+
+            DepositAccount depoAcc1 = new DepositAccount("12345678", DepositAccountType.CURRENT, new BigDecimal(100.00), new BigDecimal(100.00), new BigDecimal(50.00), true);
             DepositAccount depoAcc2 = new DepositAccount("87654321", DepositAccountType.CURRENT, new BigDecimal(100.00), new BigDecimal(100.00), new BigDecimal(50.00), true);
-           
-            
-            cust1.setAtmCard(atm1);
-            cust1.getDepositAccounts().add(depoAcc1);
-            cust1.getDepositAccounts().add(depoAcc2);
-            
-            atm1.setCustomer(cust1);
-            atm1.getDepositAccounts().add(depoAcc1);
-            atm1.getDepositAccounts().add(depoAcc2);
-            
-            depoAcc1.setAtmCard(atm1);
-            depoAcc2.setAtmCard(atm1);
-            
-            depoAcc1.setAtmCard(atm1);
-            depoAcc2.setAtmCard(atm1);
-            
+
             Long custid1 = customerSessionBean.createNewCustomer(cust1);
-            Long atm1id = atmCardSessionBean.issueAtmCard(atm1);
-            Long depoAccId1 = depositAccountSessionBean.createDepositAccount(depoAcc1);
-            Long depoAccId2 = depositAccountSessionBean.createDepositAccount(depoAcc2);
+            System.out.println("Customer created!");
             
-        } catch (EntityExistException | UnknownPersistenceException ex) {
+            Long depoAccId1 = depositAccountSessionBean.createDepositAccount(depoAcc1, custid1);
+            Long depoAccId2 = depositAccountSessionBean.createDepositAccount(depoAcc2, custid1);
+            List<Long> depoAccounts = new ArrayList<>();
+            depoAccounts.add(depoAccId1);
+            depoAccounts.add(depoAccId2);
+            System.out.println("Depo created!");
             
-            System.out.println(ex.getMessage());
+            Long atm1id = atmCardSessionBean.issueAtmCard(atm1, custid1, depoAccounts);
+            System.out.println("AtmCard created!");
             
+        } catch (EntityExistException ex) {
+            System.out.println("There is an error: Entity Exist! " + ex.getMessage());
+        } catch (UnknownPersistenceException ex) {
+            System.out.println("There is an error: Unknown Persistence Error! " + ex.getMessage());
+        } catch (AccountDoesNotMatchException ex) {
+            System.out.println("There is an error: " + ex.getMessage());
         }
-        
-        
+
     }
+
 }

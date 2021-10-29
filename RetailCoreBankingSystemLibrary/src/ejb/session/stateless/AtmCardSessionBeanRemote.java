@@ -6,8 +6,10 @@
 package ejb.session.stateless;
 
 import entity.AtmCard;
+import java.util.List;
 import javax.ejb.Remote;
 import javax.persistence.EntityNotFoundException;
+import util.exception.AccountDoesNotMatchException;
 import util.exception.EntityExistException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
@@ -20,7 +22,7 @@ import util.exception.UpdateException;
 @Remote
 public interface AtmCardSessionBeanRemote {
     
-    public Long issueAtmCard(AtmCard newAtmCard) throws EntityExistException, UnknownPersistenceException;
+    public Long issueAtmCard(AtmCard newAtmCard, Long cusId, List<Long> accounts) throws EntityExistException, UnknownPersistenceException, AccountDoesNotMatchException;
     public AtmCard insertAtmCard(String cardNumber, String pin) throws InvalidLoginCredentialException;
     public AtmCard retrieveAtmCardByAtmCardNumber(String findAtmCardNumber) throws EntityNotFoundException;
     public AtmCard retrieveAtmCardByAtmCardId(Long findAtmId) throws EntityNotFoundException;
