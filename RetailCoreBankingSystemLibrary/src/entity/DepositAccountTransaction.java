@@ -8,13 +8,17 @@ package entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 import util.enumeration.TransactionStatus;
 import util.enumeration.TransactionType;
 
@@ -30,14 +34,33 @@ public class DepositAccountTransaction implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long depositAccountTransactionId;
     
+    @NotNull
+    @Column(nullable = false)
     private Date transactionDateTime;
+    
+    @NotNull
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TransactionType type;
+    
+    @NotNull
+    @Column(unique= true, nullable = false)
     private String code; 
+    
+    @NotNull
+    @Column(unique= true, nullable = false)
     private String reference; 
+    
+    @NotNull
+    @Column(nullable = false)
     private BigDecimal amount;
+    
+    @NotNull
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TransactionStatus status;
     
-    @ManyToOne(optional= false)
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private DepositAccount depositAccount;
     
@@ -106,6 +129,34 @@ public class DepositAccountTransaction implements Serializable {
      */
     public void setStatus(TransactionStatus status) {
         this.status = status;
+    }
+
+    /**
+     * @return the sourceTransaction
+     */
+    public DepositAccountTransaction getSourceTransaction() {
+        return sourceTransaction;
+    }
+
+    /**
+     * @param sourceTransaction the sourceTransaction to set
+     */
+    public void setSourceTransaction(DepositAccountTransaction sourceTransaction) {
+        this.sourceTransaction = sourceTransaction;
+    }
+
+    /**
+     * @return the destinationTransaction
+     */
+    public DepositAccountTransaction getDestinationTransaction() {
+        return destinationTransaction;
+    }
+
+    /**
+     * @param destinationTransaction the destinationTransaction to set
+     */
+    public void setDestinationTransaction(DepositAccountTransaction destinationTransaction) {
+        this.destinationTransaction = destinationTransaction;
     }
     
 }

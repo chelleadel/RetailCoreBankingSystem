@@ -1,0 +1,10 @@
+/dist/
+/build/
+/TellerTerminalClient/dist/
+/TellerTerminalClient/build/
+/RetailCoreBankingSystemLibrary/dist/
+/RetailCoreBankingSystemLibrary/build/
+/RetailCoreBankingSystem-ejb/dist/
+/RetailCoreBankingSystem-ejb/build/
+/AutomatedTellerMachineClient/dist/
+/AutomatedTellerMachineClient/build/

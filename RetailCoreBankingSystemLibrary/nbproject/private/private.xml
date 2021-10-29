@@ -3,7 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/Users/mich/RetailCoreBankingSystem/RetailCoreBankingSystemLibrary/src/entity/DepositAccount.java</file>
+            <file>file:/Users/mich/RetailCoreBankingSystem/RetailCoreBankingSystemLibrary/src/ejb/session/stateless/CustomerSessionBeanRemote.java</file>
             <file>file:/Users/mich/RetailCoreBankingSystem/RetailCoreBankingSystemLibrary/src/entity/Customer.java</file>
+            <file>file:/Users/mich/RetailCoreBankingSystem/RetailCoreBankingSystemLibrary/src/ejb/session/stateless/EmployeeSessionBeanRemote.java</file>
         </group>
     </open-files>
 </project-private>

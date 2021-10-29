@@ -6,12 +6,18 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -25,19 +31,63 @@ public class Customer implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
     
+    @NotNull
+    @Size(min=1, max=35)
     private String firstName;
+    
+    @NotNull
+    @Size(min=1, max=35)
+    @Column(nullable = false)
     private String lastName;
+    
+    @NotNull
+    @Size(min=1, max=35)
+    @Column(unique = true, nullable = false)
     private String identificationNumber;
+    
+    @NotNull
+    @Size(min=1, max=8)
+    @Column(unique = true, nullable = false)
     private String contactNumber; 
+    
+    @NotNull
+    @Size(min=1, max=250)
+    @Column(nullable = false)
     private String adressLine1;
-    private String addressLines2;
+    
+    @NotNull
+    @Size(min=1, max=250)
+    @Column(nullable = false)
+    private String addressLine2;
+    
+    @NotNull
+    @Size(min=6, max= 6)
+    @Column(nullable = false)
     private String postalCode;
     
-    @OneToMany(mappedBy ="customer")
-    private List<AtmCard> atmCard;
+    @OneToOne
+    @JoinColumn
+    private AtmCard atmCard;
     
     @OneToMany(mappedBy ="customer")
     private List<DepositAccount> depositAccounts;
+
+    public Customer() {
+        this.depositAccounts = new ArrayList<>();
+    }
+
+    public Customer(String firstName, String lastName, String identificationNumber, String contactNumber, String adressLine1, String addressLines2, String postalCode) {
+        this();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.identificationNumber = identificationNumber;
+        this.contactNumber = contactNumber;
+        this.adressLine1 = adressLine1;
+        this.addressLine2 = addressLines2;
+        this.postalCode = postalCode;
+    }
+    
+    
 
     public Long getCustomerId() {
         return customerId;
@@ -143,17 +193,17 @@ public class Customer implements Serializable {
     }
 
     /**
-     * @return the addressLines2
+     * @return the addressLine2
      */
-    public String getAddressLines2() {
-        return addressLines2;
+    public String getAddressLine2() {
+        return addressLine2;
     }
 
     /**
-     * @param addressLines2 the addressLines2 to set
+     * @param addressLine2 the addressLine2 to set
      */
-    public void setAddressLines2(String addressLines2) {
-        this.addressLines2 = addressLines2;
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
     }
 
     /**
@@ -168,6 +218,34 @@ public class Customer implements Serializable {
      */
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    /**
+     * @return the atmCard
+     */
+    public AtmCard getAtmCard() {
+        return atmCard;
+    }
+
+    /**
+     * @param atmCard the atmCard to set
+     */
+    public void setAtmCard(AtmCard atmCard) {
+        this.atmCard = atmCard;
+    }
+
+    /**
+     * @return the depositAccounts
+     */
+    public List<DepositAccount> getDepositAccounts() {
+        return depositAccounts;
+    }
+
+    /**
+     * @param depositAccounts the depositAccounts to set
+     */
+    public void setDepositAccounts(List<DepositAccount> depositAccounts) {
+        this.depositAccounts = depositAccounts;
     }
     
 }

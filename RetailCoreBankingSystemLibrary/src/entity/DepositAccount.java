@@ -7,14 +7,21 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.enumeration.DepositAccountType;
 
 /**
@@ -29,19 +36,55 @@ public class DepositAccount implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long depositAccountId;
     
+    @NotNull
+    @Column(unique= true, nullable = false)
+    @Size(min=8, max=8)
     private String accountNumber;
+    
+    @NotNull
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private DepositAccountType accountType;
+    
+    @NotNull
+    @Column(nullable = false)
     private BigDecimal availableBalance; 
+    
+    @NotNull
+    @Column(nullable = false)
     private BigDecimal holdBalance;
-    private BigDecimal ledgerBalance; 
+    
+    @NotNull
+    @Column(nullable = false)
+    private BigDecimal ledgerBalance;
+    
+    @NotNull
+    @Column(nullable = false)
     private Boolean enabled; 
     
-    @ManyToOne(optional =false)
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Customer customer; 
     
-    @OneToMany(mappedBy ="depositAccount")
+    @ManyToOne
+    private AtmCard atmCard;
+    
+    @OneToMany(mappedBy ="depositAccount", fetch = FetchType.EAGER)
     private List<DepositAccountTransaction> transactions;
+
+    public DepositAccount() {
+        this.transactions = new ArrayList<>();
+    }
+
+    public DepositAccount(String accountNumber, DepositAccountType accountType, BigDecimal availableBalance, BigDecimal holdBalance, BigDecimal ledgerBalance, Boolean enabled) {
+        this();
+        this.accountNumber = accountNumber;
+        this.accountType = accountType;
+        this.availableBalance = availableBalance;
+        this.holdBalance = holdBalance;
+        this.ledgerBalance = ledgerBalance;
+        this.enabled = enabled;
+    }
 
     public Long getDepositAccountId() {
         return depositAccountId;
@@ -158,6 +201,48 @@ public class DepositAccount implements Serializable {
      */
     public void setAccountType(DepositAccountType accountType) {
         this.accountType = accountType;
+    }
+
+    /**
+     * @return the customer
+     */
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    /**
+     * @param customer the customer to set
+     */
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    /**
+     * @return the atmCard
+     */
+    public AtmCard getAtmCard() {
+        return atmCard;
+    }
+
+    /**
+     * @param atmCard the atmCard to set
+     */
+    public void setAtmCard(AtmCard atmCard) {
+        this.atmCard = atmCard;
+    }
+
+    /**
+     * @return the transactions
+     */
+    public List<DepositAccountTransaction> getTransactions() {
+        return transactions;
+    }
+
+    /**
+     * @param transactions the transactions to set
+     */
+    public void setTransactions(List<DepositAccountTransaction> transactions) {
+        this.transactions = transactions;
     }
     
 }

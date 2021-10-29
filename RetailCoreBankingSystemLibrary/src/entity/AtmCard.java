@@ -6,12 +6,17 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -25,15 +30,45 @@ public class AtmCard implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long atmCardId;
     
+    @NotNull
+    @Column(unique = true, nullable = false)
     private String cardNumber;
+    
+    @NotNull
+    @Column(nullable = false)
+    @Size(min= 1, max=70)
     private String nameOnCard;
-    private Boolean enabled; 
+    
+    @NotNull
+    @Column(nullable = false)
+    private Boolean enabled;
+    
+    @NotNull
+    @Column(nullable = false)
+    @Size(min= 6, max= 6)
     private String pin; 
     
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @OneToOne(mappedBy ="atmCard")
     private Customer customer; 
+    
+    @OneToMany(mappedBy = "atmCard")
+    private List<DepositAccount> depositAccounts;
 
+    public AtmCard(String cardNumber, String nameOnCard, Boolean enabled, String pin) {
+        this();
+        this.cardNumber = cardNumber;
+        this.nameOnCard = nameOnCard;
+        this.enabled = enabled;
+        this.pin = pin;
+    }
+
+    public AtmCard() {
+        this.depositAccounts = new ArrayList<>();
+    }
+    
+
+    
+    
     public Long getAtmCardId() {
         return atmCardId;
     }
@@ -121,6 +156,34 @@ public class AtmCard implements Serializable {
      */
     public void setPin(String pin) {
         this.pin = pin;
+    }
+
+    /**
+     * @return the customer
+     */
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    /**
+     * @param customer the customer to set
+     */
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    /**
+     * @return the depositAccounts
+     */
+    public List<DepositAccount> getDepositAccounts() {
+        return depositAccounts;
+    }
+
+    /**
+     * @param depositAccounts the depositAccounts to set
+     */
+    public void setDepositAccounts(List<DepositAccount> depositAccounts) {
+        this.depositAccounts = depositAccounts;
     }
     
 }

@@ -7,6 +7,8 @@ package ejb.session.stateless;
 
 import entity.DepositAccountTransaction;
 import javax.ejb.Local;
+import util.exception.EntityExistException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -15,6 +17,6 @@ import javax.ejb.Local;
 @Local
 public interface DepositAccountTransactionSessionBeanLocal {
     
-    public Long createDepositAccountTransaction(DepositAccountTransaction newDepositAccountTransaction);
+    public Long createDepositAccountTransaction(DepositAccountTransaction newDepositAccountTransaction) throws EntityExistException, UnknownPersistenceException ;
     
 }
