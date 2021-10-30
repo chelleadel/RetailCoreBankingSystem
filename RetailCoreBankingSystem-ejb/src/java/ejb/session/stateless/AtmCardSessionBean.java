@@ -21,6 +21,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.exception.AccountDoesNotMatchException;
+import util.exception.DeleteException;
 import util.exception.EntityExistException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
@@ -109,7 +110,7 @@ public class AtmCardSessionBean implements AtmCardSessionBeanRemote, AtmCardSess
     public AtmCard retrieveAtmCardByAtmCardNumber(String findAtmCardNumber) throws EntityNotFoundException {
 
         Query query = em.createQuery("SELECT a from AtmCard a WHERE a.cardNumber = :findAtmCardNumber");
-        query.setParameter("findAtmCardId", findAtmCardNumber);
+        query.setParameter("findAtmCardNumber", findAtmCardNumber);
 
         try {
             return (AtmCard) query.getSingleResult();
@@ -134,27 +135,34 @@ public class AtmCardSessionBean implements AtmCardSessionBeanRemote, AtmCardSess
     }
 
     @Override
-    public void changePIN(AtmCard newAtmCard) throws UpdateException {
+    public void changePIN(Long atmCardId, String oldPin, String newPin) throws UpdateException {
 
-        if (newAtmCard != null && newAtmCard.getAtmCardId() != null) {
-
-            AtmCard atmCardToUpdate;
-            try {
-                atmCardToUpdate = retrieveAtmCardByAtmCardId(newAtmCard.getAtmCardId());
-            } catch (EntityNotFoundException ex) {
-                throw new UpdateException("ATM Card does not exist");
-            }
-
-            if (atmCardToUpdate != null) {
-
-                atmCardToUpdate.setPin(newAtmCard.getPin());
-
-            } else {
-                throw new UpdateException("Update Card Error");
-            }
-
+        AtmCard card = retrieveAtmCardByAtmCardId(atmCardId);
+        
+        if (card.getPin().equals(oldPin)) {
+            card.setPin(newPin);
+        } else {
+            throw new UpdateException("Update Pin Error: Old Pin Verification Fail.");
         }
 
+    }
+    
+    @Override
+    public void deleteAtmCard(Long atmCardId) throws DeleteException {
+        
+        try {
+            AtmCard atmCard = retrieveAtmCardByAtmCardId(atmCardId);
+            atmCard.getCustomer().setAtmCard(null);
+            
+            for (DepositAccount depoAcc : atmCard.getDepositAccounts()) {
+                depoAcc.setAtmCard(null);
+            }
+         
+            em.remove(atmCard);
+        } catch (EntityNotFoundException ex) {
+            throw new DeleteException("Entity can't be deleted!: " + ex.getMessage());
+        }
+        
     }
 
 }

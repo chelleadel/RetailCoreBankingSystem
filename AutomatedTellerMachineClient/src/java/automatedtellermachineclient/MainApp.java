@@ -103,7 +103,7 @@ public class MainApp {
             System.out.println("1: Enquire Available Balance");
             System.out.println("2: Change PIN Number");
             System.out.println("-----------------------");
-            System.out.println("3: Exit\n");
+            System.out.println("3: Log Out\n");
 
             response = 0;
 
@@ -117,6 +117,7 @@ public class MainApp {
                 } else if (response == 2) {
                     doChangePINNumber();
                 } else if (response == 3) {
+                    currentAtmCard = null;
                     break;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
@@ -174,10 +175,14 @@ public class MainApp {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("*** Automated Teller Machine :: Change PIN Number ***\n");
+        String oldPIN;
         String newPIN;
         String verifyPIN;
 
         while (true) {
+            System.out.print("Enter Old PIN > ");
+            oldPIN = scanner.nextLine().trim();
+            
             System.out.print("Enter New PIN > ");
             newPIN = scanner.nextLine().trim();
 
@@ -187,9 +192,12 @@ public class MainApp {
             if (newPIN.equals(verifyPIN)) {
                 
                 try {
-                    atmCardSessionBeanRemote.changePIN(currentAtmCard);
+                    atmCardSessionBeanRemote.changePIN(currentAtmCard.getAtmCardId(), oldPIN, newPIN);
+                    System.out.println("PIN Verification Success!");
+                    break; // for now set it to break. 
                 } catch (UpdateException ex) {
                     System.out.println(ex.getMessage());
+                    System.out.println("Try Again");
                 }
               
             } else {
@@ -197,7 +205,7 @@ public class MainApp {
                 System.out.println("Try Again");
             }
             
-            break; // for now set it to break. 
+
         }
 
         System.out.print("Press any key to continue...> ");

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -51,7 +52,7 @@ public class AtmCard implements Serializable {
     @OneToOne(mappedBy ="atmCard")
     private Customer customer; 
     
-    @OneToMany(mappedBy = "atmCard")
+    @OneToMany(mappedBy = "atmCard", fetch = FetchType.EAGER)
     private List<DepositAccount> depositAccounts;
 
     public AtmCard(String cardNumber, String nameOnCard, Boolean enabled, String pin) {

@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.persistence.EntityNotFoundException;
 import util.exception.AccountDoesNotMatchException;
+import util.exception.DeleteException;
 import util.exception.EntityExistException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
@@ -26,7 +27,7 @@ public interface AtmCardSessionBeanRemote {
     public AtmCard insertAtmCard(String cardNumber, String pin) throws InvalidLoginCredentialException;
     public AtmCard retrieveAtmCardByAtmCardNumber(String findAtmCardNumber) throws EntityNotFoundException;
     public AtmCard retrieveAtmCardByAtmCardId(Long findAtmId) throws EntityNotFoundException;
-    public void changePIN(AtmCard newAtmCard) throws UpdateException;
-    
+    public void changePIN(Long atmCard, String oldPin, String newPin) throws UpdateException;
+    public void deleteAtmCard(Long atmCardId) throws DeleteException;
     
 }

@@ -9,13 +9,14 @@ package util.exception;
  *
  * @author mich
  */
-public class DeleteCreditCardException extends Exception {
+public class DeleteException extends Exception {
 
-    public DeleteCreditCardException() {
+    public DeleteException() {
     }
 
-    public DeleteCreditCardException(String string) {
+    public DeleteException(String string) {
         super(string);
     }
+    
     
 }

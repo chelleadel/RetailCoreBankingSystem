@@ -71,7 +71,7 @@ public class Customer implements Serializable {
     @JoinColumn
     private AtmCard atmCard;
     
-    @OneToMany(mappedBy ="customer")
+    @OneToMany(mappedBy ="customer", fetch = FetchType.EAGER)
     private List<DepositAccount> depositAccounts;
 
     public Customer() {

@@ -14,7 +14,6 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import util.exception.DeleteCreditCardException;
 import util.exception.EntityExistException;
 import util.exception.UnknownPersistenceException;
 
@@ -63,14 +62,6 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new EntityNotFoundException("Customer Id " + customerId + " does not exist!");
         }
-
-    }
-
-    @Override
-    public void deleteCreditCardofCustomerbyCustomerId(Long customerId) throws DeleteCreditCardException {
-
-        Customer currentCustomer = retrieveCustomerByCustomerId(customerId);
-        currentCustomer.setAtmCard(null);
 
     }
 

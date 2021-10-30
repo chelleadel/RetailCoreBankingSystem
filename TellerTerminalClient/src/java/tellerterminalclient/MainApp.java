@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import util.enumeration.DepositAccountType;
-import util.exception.DeleteCreditCardException;
+import util.exception.AccountDoesNotMatchException;
+import util.exception.DeleteException;
 import util.exception.EntityExistException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
@@ -39,10 +40,6 @@ public class MainApp {
     private CustomerSessionBeanRemote customerSessionBean;
 
     private AtmCardSessionBeanRemote atmCardSessionBean;
-
-    private Employee currentEmployee;
-
-    private Customer currentCustomer;
 
     public MainApp() {
     }
@@ -99,6 +96,7 @@ public class MainApp {
     }
 
     private void doLogin() throws InvalidLoginCredentialException {
+        
         Scanner scanner = new Scanner(System.in);
         String username = "";
         String password = "";
@@ -110,7 +108,7 @@ public class MainApp {
         password = scanner.nextLine().trim();
 
         if (username.length() > 0 && password.length() > 0) {
-            currentEmployee = employeeSessionBean.employeeLogin(username, password);
+            employeeSessionBean.employeeLogin(username, password);
         } else {
             throw new InvalidLoginCredentialException("Missing login credential!");
         }
@@ -127,7 +125,7 @@ public class MainApp {
             System.out.println("2: Open Deposit Account");
             System.out.println("3: Issue ATM Card");
             System.out.println("4: Exit\n");
-
+            
             response = 0;
             while (response < 1 || response > 4) {
                 System.out.print("> ");
@@ -162,6 +160,7 @@ public class MainApp {
     private void doCreateCustomer() {
         Scanner scanner = new Scanner(System.in);
         Customer newCustomer = new Customer();
+        Customer current;
 
         System.out.println("*** Teller Terminal :: Create New Customer ***\n");
         System.out.print("Enter First Name> ");
@@ -181,7 +180,7 @@ public class MainApp {
 
         try {
             Long newCustomerId = customerSessionBean.createNewCustomer(newCustomer);
-            currentCustomer = customerSessionBean.retrieveCustomerByCustomerId(newCustomerId);
+            current = customerSessionBean.retrieveCustomerByCustomerId(newCustomerId);
             System.out.println("New customer created successfully!: " + newCustomerId + "\n");
 
         } catch (EntityExistException ex) {
@@ -194,6 +193,8 @@ public class MainApp {
 
     private void doOpenDepositAccount() {
 
+        Customer currentCustomer;
+        
         try {
             Scanner scanner = new Scanner(System.in);
             DepositAccount depositAccount = new DepositAccount();
@@ -219,7 +220,7 @@ public class MainApp {
             depositAccount.setEnabled(true);
 
             depositAccountSessionBean.createDepositAccount(depositAccount, currentCustomer.getCustomerId());
-            System.out.println("Deposit Account " + depositAccount.getDepositAccountId() + " is successfully created!");
+            System.out.println("Deposit Account with Account Number: " + depositAccount.getAccountNumber() + " is successfully created!");
 
         } catch (EntityExistException ex) {
 
@@ -237,11 +238,13 @@ public class MainApp {
 
         Scanner scanner = new Scanner(System.in);
         boolean canIssueNewCard = false;
+        Customer currentCustomer;
 
         System.out.println("*** Teller Terminal :: Issue New ATM Card ***\n");
         System.out.println("*** Select Existing Customer ***");
         System.out.print("Enter Customer Id> ");
         Long cusId = scanner.nextLong();
+        scanner.nextLine();
         currentCustomer = customerSessionBean.retrieveCustomerByCustomerId(cusId);
         System.out.println("*** Existing Customer Found! ***");
 
@@ -251,9 +254,10 @@ public class MainApp {
 
             if (answer.equals("Y")) {
                 try {
-                    customerSessionBean.deleteCreditCardofCustomerbyCustomerId(cusId);
+                    atmCardSessionBean.deleteAtmCard(currentCustomer.getAtmCard().getAtmCardId());
                     System.out.println("Old ATM Card is successfully deleted!");
-                } catch (DeleteCreditCardException ex) {
+                    canIssueNewCard = true;
+                } catch (DeleteException ex) {
                     System.out.println("There is an error when deleting your ATM Card: " + ex.getMessage());
                 }
             } else {
@@ -274,10 +278,8 @@ public class MainApp {
                 System.out.println("*** Teller Terminal :: Issue New ATM Card For " + currentCustomer.getFirstName() + "***\n");
                 System.out.print("Enter Card Number> ");
                 newAtmCard.setCardNumber(scanner.nextLine().trim());
-                System.out.print("Enter Card Number> ");
-                newAtmCard.setCardNumber(scanner.nextLine().trim());
                 System.out.print("Enter Name on ATM Card> ");
-                newAtmCard.setCardNumber(scanner.nextLine().trim());
+                newAtmCard.setNameOnCard(scanner.nextLine().trim());
                 newAtmCard.setEnabled(true);
                 System.out.print("Enter PIN on ATM Card> ");
                 newAtmCard.setPin(scanner.nextLine().trim());
@@ -286,21 +288,22 @@ public class MainApp {
                 List<Long> accounts = new ArrayList<>();
                 System.out.println("Finding existing deposit accounts to link to card");
                 for (DepositAccount account : currentCustomer.getDepositAccounts()) {
-                    System.out.print("Do you want to link " + account.getAccountNumber() + "? (Enter Y to link)> ");
+                    System.out.print("Do you want to link " + account.getAccountNumber() + "? (Y/N)> ");
                     String reply = scanner.nextLine().trim();
                     if (reply.equals("Y")) {
                         accounts.add(account.getDepositAccountId());
                     }
                 }
-
+                
                 atmCardSessionBean.issueAtmCard(newAtmCard, currentCustomer.getCustomerId(), accounts);
-                System.out.println("ATM Card with ATM Card ID" + newAtmCard.getAtmCardId() + " is successfully created!");
+                System.out.println("ATM Card with ATM Card Number: " + newAtmCard.getCardNumber() + " is successfully created!");
+            
             } catch (EntityExistException ex) {
-
                 System.out.println("There is an error issuing a new ATM Card: " + ex.getMessage());
             } catch (UnknownPersistenceException ex) {
-
-                System.out.println("An unknown error has occurred while creating the new customer!: " + ex.getMessage() + "\n");
+                System.out.println("An unknown error has occurred!: " + ex.getMessage() + "\n");
+            } catch (AccountDoesNotMatchException ex) {
+                System.out.println("An unknown error has occurred while creating the issuing ATM Card!: " + ex.getMessage() + "\n");
             }
         }
 

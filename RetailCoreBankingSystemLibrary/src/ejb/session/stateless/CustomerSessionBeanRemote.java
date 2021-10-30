@@ -8,7 +8,6 @@ package ejb.session.stateless;
 import entity.Customer;
 import javax.ejb.Remote;
 import javax.persistence.EntityNotFoundException;
-import util.exception.DeleteCreditCardException;
 import util.exception.EntityExistException;
 import util.exception.UnknownPersistenceException;
 
@@ -21,6 +20,5 @@ public interface CustomerSessionBeanRemote {
     
     public Long createNewCustomer(Customer newCustomer) throws EntityExistException, UnknownPersistenceException;
     public Customer retrieveCustomerByCustomerId(Long customerId) throws EntityNotFoundException;
-    public void deleteCreditCardofCustomerbyCustomerId(Long customerId) throws DeleteCreditCardException;
     
 }
